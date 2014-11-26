@@ -412,12 +412,20 @@ int ReadSensor(unsigned long long ID)
   for(RetryCount=0;RetryCount<10;RetryCount++)
   {
 
-   if(!DoReset()) continue;
+   if(!DoReset())
+   {
+    printf("skip - Failed to reset\n");
+    continue;
+   }
 
    // start a conversion
    SelectSensor(ID);
 
-  if(!ReadScratchPad()) continue;
+  if(!ReadScratchPad())
+  {
+   printf("skip - Failed to read ScratchPad\n");
+   continue;
+  }
 
 //     for(loop=0;loop<9;loop++)
 //       printf("%02X ",ScratchPad[loop]);
@@ -426,7 +434,11 @@ int ReadSensor(unsigned long long ID)
   // OK Check sum Check;
   CRCByte= CalcCRC(ScratchPad,8);
 
-  if(CRCByte!=ScratchPad[8]) continue;;
+  if(CRCByte!=ScratchPad[8])
+  {
+   printf("skip - Wrong CRC\n");
+   continue;
+  }
 
   //Check Resolution
    resolution=0;
@@ -439,7 +451,11 @@ int ReadSensor(unsigned long long ID)
      case  0x7f: resolution=12;break;
    }
 
-   if(resolution==0) continue;
+   if(resolution==0)
+   {
+    printf("skip - Sensor resolution is not set\n");
+    continue;
+   }
     // Read Temperature
 
     IntTemp.CHAR[0]=ScratchPad[0];
